@@ -5,27 +5,26 @@ import * as THREE from 'three';
 
 export const Globe = () => {
   const globeRef = useRef<THREE.Mesh>(null);
-  const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const shaderRef = useRef<THREE.ShaderMaterial>(null);
 
-  useEffect(() => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.time = { value: 0 };
-    }
-  }, []);
+  const uniforms = {
+    time: { value: 0 },
+  };
 
   useFrame(({ clock }) => {
     if (globeRef.current) {
       globeRef.current.rotation.y += 0.001;
     }
-    if (materialRef.current) {
-      materialRef.current.uniforms.time.value = clock.getElapsedTime();
+    if (shaderRef.current) {
+      shaderRef.current.uniforms.time.value = clock.getElapsedTime();
     }
   });
 
   return (
     <Sphere ref={globeRef} args={[1, 64, 64]}>
       <shaderMaterial
-        ref={materialRef}
+        ref={shaderRef}
+        uniforms={uniforms}
         vertexShader={`
           varying vec2 vUv;
           varying vec3 vNormal;
