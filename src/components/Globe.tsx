@@ -5,55 +5,29 @@ import * as THREE from 'three';
 
 export const Globe = () => {
   const globeRef = useRef<THREE.Mesh>(null);
-  const materialRef = useRef<THREE.ShaderMaterial>(null);
-
-  const shaderUniforms = {
-    time: { value: 0.0 },
-  };
+  const materialRef = useRef<THREE.MeshStandardMaterial>(null);
 
   useFrame(({ clock }) => {
     if (globeRef.current) {
       globeRef.current.rotation.y += 0.001;
     }
     if (materialRef.current) {
-      materialRef.current.uniforms.time.value = clock.getElapsedTime();
+      // Create a pulsing effect with the emissive intensity
+      const pulse = Math.sin(clock.getElapsedTime() * 2) * 0.5 + 0.5;
+      materialRef.current.emissiveIntensity = pulse;
     }
   });
 
   return (
     <Sphere ref={globeRef} args={[1, 64, 64]}>
-      <shaderMaterial
+      <meshStandardMaterial
         ref={materialRef}
-        uniforms={shaderUniforms}
-        vertexShader={`
-          varying vec2 vUv;
-          varying vec3 vNormal;
-          
-          void main() {
-            vUv = uv;
-            vNormal = normalize(normalMatrix * normal);
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }
-        `}
-        fragmentShader={`
-          uniform float time;
-          varying vec2 vUv;
-          varying vec3 vNormal;
-          
-          void main() {
-            vec3 baseColor = vec3(0.1, 0.1, 0.1);
-            vec3 highlightColor = vec3(0.831, 0.686, 0.216);
-            
-            float pulse = sin(time * 2.0) * 0.5 + 0.5;
-            float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
-            
-            vec3 finalColor = mix(baseColor, highlightColor, fresnel * pulse);
-            
-            gl_FragColor = vec4(finalColor, 1.0);
-          }
-        `}
-        transparent={true}
-        side={THREE.DoubleSide}
+        color="#1a1a1a"
+        metalness={0.8}
+        roughness={0.2}
+        emissive="#d4af37"
+        emissiveIntensity={0.5}
+        toneMapped={false}
       />
     </Sphere>
   );
