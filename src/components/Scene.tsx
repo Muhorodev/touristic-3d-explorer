@@ -3,6 +3,7 @@ import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Globe } from './Globe';
 import { Suspense } from 'react';
 import { motion } from 'framer-motion';
+import * as THREE from 'three';
 
 export const Scene = () => {
   return (
@@ -12,7 +13,14 @@ export const Scene = () => {
       exit={{ opacity: 0 }}
       className="w-full h-screen absolute inset-0"
     >
-      <Canvas>
+      <Canvas
+        gl={{
+          antialias: true,
+          toneMapping: THREE.ACESFilmicToneMapping,
+          outputEncoding: THREE.sRGBEncoding,
+        }}
+        dpr={[1, 2]}
+      >
         <Suspense fallback={null}>
           <PerspectiveCamera makeDefault position={[0, 0, 4]} />
           <OrbitControls
