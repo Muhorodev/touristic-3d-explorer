@@ -1,30 +1,30 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Sphere } from '@react-three/drei';
 import * as THREE from 'three';
 
 export const Globe = () => {
   const globeRef = useRef<THREE.Mesh>(null);
-  const shaderRef = useRef<THREE.ShaderMaterial>(null);
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
 
-  const uniforms = {
-    time: { value: 0 },
+  const shaderUniforms = {
+    time: { value: 0.0 },
   };
 
   useFrame(({ clock }) => {
     if (globeRef.current) {
       globeRef.current.rotation.y += 0.001;
     }
-    if (shaderRef.current) {
-      shaderRef.current.uniforms.time.value = clock.getElapsedTime();
+    if (materialRef.current) {
+      materialRef.current.uniforms.time.value = clock.getElapsedTime();
     }
   });
 
   return (
     <Sphere ref={globeRef} args={[1, 64, 64]}>
       <shaderMaterial
-        ref={shaderRef}
-        uniforms={uniforms}
+        ref={materialRef}
+        uniforms={shaderUniforms}
         vertexShader={`
           varying vec2 vUv;
           varying vec3 vNormal;
@@ -52,6 +52,8 @@ export const Globe = () => {
             gl_FragColor = vec4(finalColor, 1.0);
           }
         `}
+        transparent={true}
+        side={THREE.DoubleSide}
       />
     </Sphere>
   );
