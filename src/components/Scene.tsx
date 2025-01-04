@@ -17,7 +17,6 @@ export const Scene = () => {
         gl={{
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
-          outputEncoding: THREE.sRGBEncoding,
         }}
         dpr={[1, 2]}
       >
